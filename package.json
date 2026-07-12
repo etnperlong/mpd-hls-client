@@ -1,12 +1,14 @@
 {
 	"name": "mpd-hls-client",
-	"version": "0.1.0",
+	"version": "0.13.0",
 	"description": "Type-safe server-side client for the MPD-HLS management API",
 	"type": "module",
 	"license": "MIT",
 	"sideEffects": false,
 	"files": [
-		"dist"
+		"dist",
+		"README.md",
+		"README_ZH.md"
 	],
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",

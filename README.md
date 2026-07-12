@@ -1,5 +1,7 @@
 # mpd-hls-client
 
+English | [简体中文](./README_ZH.md)
+
 Type-safe, server-side TypeScript client for the MPD-HLS management API. It supports the full management surface used by the MPD-HLS v0.13 console and validates JSON responses with Zod v4.
 
 ## Runtime support
