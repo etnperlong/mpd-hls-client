@@ -1,13 +1,13 @@
 import type { z } from "zod";
-import { encodeBasicAuth } from "./auth";
+import { encodeBasicAuth } from "./auth.js";
 import {
 	MpdHlsAuthenticationError,
 	MpdHlsHttpError,
 	MpdHlsNetworkError,
 	MpdHlsResponseValidationError,
 	MpdHlsTimeoutError,
-} from "./errors";
-import type { MpdHlsClientOptions, RequestOptions } from "./types";
+} from "./errors.js";
+import type { MpdHlsClientOptions, RequestOptions } from "./types.js";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 

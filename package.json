@@ -31,9 +31,10 @@
 		"build:types": "tsc -p tsconfig.build.json",
 		"typecheck": "tsc --noEmit",
 		"test": "bun test",
+		"test:runtimes": "bun run build && bun scripts/runtime-smoke.mjs && node scripts/runtime-smoke.mjs && deno run scripts/runtime-smoke.mjs",
+		"test:types:node": "tsc --noEmit --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck scripts/node-next-smoke.ts",
 		"lint": "biome check --write .",
-		"lint:check": "biome check .",
-		"prepare": "husky"
+		"lint:check": "biome check ."
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx,json,css,md}": "biome check --write --no-errors-on-unmatched"

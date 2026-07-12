@@ -1,4 +1,4 @@
-import type { QueryValue } from "../types";
+import type { QueryValue } from "../types.js";
 
 /** Appends defined query values to a relative API path. */
 export function withQuery(

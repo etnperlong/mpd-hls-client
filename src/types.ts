@@ -1,4 +1,4 @@
-import type { BasicAuth } from "./auth";
+import type { BasicAuth } from "./auth.js";
 
 /** HTTP implementation accepted by the client. */
 export type Fetch = typeof globalThis.fetch;
