@@ -43,9 +43,4 @@ export class BrandingResource {
 			options,
 		);
 	}
-
-	/** Builds the relative URL for the current branding icon. */
-	iconUrl(): string {
-		return "/api/branding/icon";
-	}
 }

@@ -37,7 +37,7 @@ describe("BrandingResource", () => {
 		});
 		const result = await resource.get();
 		expect(result.future_field).toEqual({ retained: true });
-		expect(resource.iconUrl()).toBe("/api/branding/icon");
+		expect(result.icon_url).toBe("/api/branding/icon?v=1");
 
 		const resetResource = createResource((url, init) => {
 			expect(init.method).toBe("DELETE");
