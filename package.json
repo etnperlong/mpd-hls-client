@@ -42,7 +42,7 @@
 		"*.{ts,tsx,js,jsx,json,css,md}": "biome check --write --no-errors-on-unmatched"
 	},
 	"dependencies": {
-		"zod": "^4.1.12"
+		"zod": "^4.5.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.1",
