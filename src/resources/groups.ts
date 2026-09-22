@@ -13,8 +13,8 @@ import {
 	GroupOperationResultSchema,
 	GroupSchema,
 } from "../schemas/group.js";
-import type { Transport, TransportRequestOptions } from "../transport.js";
-import { jsonRequest } from "../transport.js";
+import type { Transport } from "../transport.js";
+import { jsonOptions } from "../transport.js";
 import type { ForceOptions, RequestOptions } from "../types.js";
 
 /** Mutable fields accepted by the group update endpoint. */
@@ -55,7 +55,7 @@ export class GroupsResource {
 			"POST",
 			"/api/groups",
 			GroupSchema,
-			groupJsonRequest({ name }, options),
+			jsonOptions({ name }, options),
 		);
 	}
 
@@ -71,7 +71,7 @@ export class GroupsResource {
 				force: options.force,
 			}),
 			GroupSchema,
-			groupJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -95,7 +95,7 @@ export class GroupsResource {
 			"POST",
 			withQuery("/api/groups/batch-delete", { force: options.force }),
 			GroupOperationResultSchema,
-			groupJsonRequest({ group_ids: groupIds }, options),
+			jsonOptions({ group_ids: groupIds }, options),
 		);
 	}
 
@@ -160,7 +160,7 @@ export class GroupsResource {
 			"POST",
 			"/api/groups/import",
 			GroupImportResultSchema,
-			groupJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -173,19 +173,7 @@ export class GroupsResource {
 			"POST",
 			path,
 			GroupOperationResultSchema,
-			groupJsonRequest(body, options),
+			jsonOptions(body, options),
 		);
 	}
-}
-
-function groupJsonRequest(
-	value: unknown,
-	options: RequestOptions,
-): TransportRequestOptions {
-	const request = jsonRequest(value);
-	const headers = new Headers(options.headers);
-	new Headers(request.headers).forEach((value, key) => {
-		headers.set(key, value);
-	});
-	return { ...options, ...request, headers };
 }

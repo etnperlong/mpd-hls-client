@@ -6,13 +6,10 @@ import {
 	epgRulePreviewSchema,
 	epgRuleSchema,
 } from "../schemas/epg.js";
+import { jsonOptions } from "../transport.js";
 import type { RequestOptions } from "../types.js";
 import { EpgProgrammesResource } from "./epg-programmes.js";
-import {
-	type EpgRuleInput,
-	type EpgRuleUpdate,
-	epgJsonOptions,
-} from "./epg-shared.js";
+import type { EpgRuleInput, EpgRuleUpdate } from "./epg-shared.js";
 
 /** Client for EPG keyword-rule operations. */
 export class EpgRulesResource extends EpgProgrammesResource {
@@ -35,7 +32,7 @@ export class EpgRulesResource extends EpgProgrammesResource {
 			"POST",
 			"/api/epg/rules",
 			epgRuleSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 
@@ -59,7 +56,7 @@ export class EpgRulesResource extends EpgProgrammesResource {
 			"PUT",
 			`/api/epg/rules/${encodeURIComponent(id)}`,
 			epgRuleSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 

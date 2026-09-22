@@ -8,13 +8,10 @@ import {
 	paginatedChannelsSchema,
 } from "../schemas/channel.js";
 import { unknownObjectSchema } from "../schemas/common.js";
+import { jsonOptions } from "../transport.js";
 import type { ForceOptions, RequestOptions } from "../types.js";
 import { ChannelBatchResource } from "./channels-batch.js";
-import {
-	type ChannelPatch,
-	channelJsonRequest,
-	type JsonObject,
-} from "./channels-settings.js";
+import type { ChannelPatch, JsonObject } from "./channels-settings.js";
 
 /** Filters and pagination accepted by the channel list endpoint. */
 export interface ListChannelsOptions extends RequestOptions {
@@ -53,7 +50,7 @@ export class ChannelsResource extends ChannelBatchResource {
 			"POST",
 			"/api/channels",
 			channelSchema,
-			channelJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -70,7 +67,7 @@ export class ChannelsResource extends ChannelBatchResource {
 				force,
 			}),
 			channelSchema,
-			channelJsonRequest(patch, request),
+			jsonOptions(patch, request),
 		);
 	}
 
@@ -132,7 +129,7 @@ export class ChannelsResource extends ChannelBatchResource {
 			"POST",
 			"/api/channels/import-o11",
 			importO11ResultSchema,
-			channelJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 }

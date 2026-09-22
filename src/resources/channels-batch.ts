@@ -1,11 +1,11 @@
 import { withQuery } from "../internal/query.js";
 import { type Channel, channelListSchema } from "../schemas/channel.js";
 import { unknownObjectSchema } from "../schemas/common.js";
+import { jsonOptions } from "../transport.js";
 import type { ForceOptions, ItemList, RequestOptions } from "../types.js";
 import {
 	type ChannelPatch,
 	ChannelSettingsResource,
-	channelJsonRequest,
 	type JsonObject,
 } from "./channels-settings.js";
 
@@ -21,7 +21,7 @@ export class ChannelBatchResource extends ChannelSettingsResource {
 			"POST",
 			"/api/channels/batch",
 			channelListSchema,
-			channelJsonRequest(
+			jsonOptions(
 				{
 					items,
 					auto_create_groups_from_category: autoCreateGroupsFromCategory,
@@ -166,7 +166,7 @@ export class ChannelBatchResource extends ChannelSettingsResource {
 			"POST",
 			withQuery(`/api/channels/${suffix}`, { force }),
 			unknownObjectSchema,
-			channelJsonRequest(body, request),
+			jsonOptions(body, request),
 		);
 	}
 
@@ -180,7 +180,7 @@ export class ChannelBatchResource extends ChannelSettingsResource {
 			"POST",
 			`/api/channels/by-id/${encodeURIComponent(channelId)}/${suffix}`,
 			unknownObjectSchema,
-			channelJsonRequest(body, options),
+			jsonOptions(body, options),
 		);
 	}
 }

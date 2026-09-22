@@ -10,8 +10,8 @@ import {
 	UserTokenListSchema,
 	UserTokenSchema,
 } from "../schemas/user.js";
-import type { Transport, TransportRequestOptions } from "../transport.js";
-import { jsonRequest } from "../transport.js";
+import type { Transport } from "../transport.js";
+import { jsonOptions } from "../transport.js";
 import type { RequestOptions } from "../types.js";
 
 /** Wire payload accepted by the user creation endpoint. */
@@ -56,7 +56,7 @@ export class UsersResource {
 			"POST",
 			"/api/users",
 			UserSchema,
-			userJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -70,7 +70,7 @@ export class UsersResource {
 			"PUT",
 			this.userPath(userId),
 			UserSchema,
-			userJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -84,7 +84,7 @@ export class UsersResource {
 			"POST",
 			`${this.userPath(userId)}/password`,
 			UserSchema,
-			userJsonRequest({ password }, options),
+			jsonOptions({ password }, options),
 		);
 	}
 
@@ -116,7 +116,7 @@ export class UsersResource {
 			"POST",
 			`${this.userPath(userId)}/tokens`,
 			UserTokenSchema,
-			userJsonRequest(payload, options),
+			jsonOptions(payload, options),
 		);
 	}
 
@@ -144,23 +144,11 @@ export class UsersResource {
 			"PATCH",
 			`${this.userPath(userId)}/tokens/${encodeURIComponent(token)}`,
 			UserTokenSchema,
-			userJsonRequest({ ttl_secs: ttlSecs }, options),
+			jsonOptions({ ttl_secs: ttlSecs }, options),
 		);
 	}
 
 	private userPath(userId: string): string {
 		return `/api/users/${encodeURIComponent(userId)}`;
 	}
-}
-
-function userJsonRequest(
-	value: unknown,
-	options: RequestOptions,
-): TransportRequestOptions {
-	const request = jsonRequest(value);
-	const headers = new Headers(options.headers);
-	new Headers(request.headers).forEach((value, key) => {
-		headers.set(key, value);
-	});
-	return { ...options, ...request, headers };
 }

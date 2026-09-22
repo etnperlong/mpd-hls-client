@@ -6,11 +6,11 @@ import {
 	epgProgrammeScheduleResultSchema,
 	epgScheduledProgrammeListSchema,
 } from "../schemas/epg.js";
+import { jsonOptions } from "../transport.js";
 import type { RequestOptions } from "../types.js";
-import {
-	type EpgProgrammeQuery,
-	type EpgProgrammeScheduleInput,
-	epgJsonOptions,
+import type {
+	EpgProgrammeQuery,
+	EpgProgrammeScheduleInput,
 } from "./epg-shared.js";
 import { EpgSourcesResource } from "./epg-sources.js";
 
@@ -31,7 +31,7 @@ export class EpgProgrammesResource extends EpgSourcesResource {
 			"POST",
 			"/api/epg/programmes",
 			epgProgrammeListSchema,
-			epgJsonOptions(body, options),
+			jsonOptions(body, options),
 		);
 	}
 
@@ -44,7 +44,7 @@ export class EpgProgrammesResource extends EpgSourcesResource {
 			"POST",
 			"/api/epg/programmes/schedule",
 			epgProgrammeScheduleResultSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 

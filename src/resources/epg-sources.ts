@@ -13,13 +13,12 @@ import {
 	epgSourceListSchema,
 	epgSourceSchema,
 } from "../schemas/epg.js";
-import type { Transport } from "../transport.js";
+import { jsonOptions, type Transport } from "../transport.js";
 import type { RequestOptions } from "../types.js";
-import {
-	type EpgBindingInput,
-	type EpgSourceChannelQuery,
-	type EpgSourceInput,
-	epgJsonOptions,
+import type {
+	EpgBindingInput,
+	EpgSourceChannelQuery,
+	EpgSourceInput,
 } from "./epg-shared.js";
 
 /** Client for EPG source and binding operations. */
@@ -45,7 +44,7 @@ export class EpgSourcesResource {
 			"POST",
 			"/api/epg/sources",
 			epgSourceSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 
@@ -59,7 +58,7 @@ export class EpgSourcesResource {
 			"PUT",
 			`/api/epg/sources/${encodeURIComponent(id)}`,
 			epgSourceSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 
@@ -100,7 +99,7 @@ export class EpgSourcesResource {
 			"PUT",
 			"/api/epg/bindings",
 			epgBindingSchema,
-			epgJsonOptions(input, options),
+			jsonOptions(input, options),
 		);
 	}
 

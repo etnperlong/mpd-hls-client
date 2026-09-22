@@ -3,8 +3,6 @@ import type {
 	EpgRuleCondition,
 	EpgSourceUrl,
 } from "../schemas/epg.js";
-import { jsonRequest, type TransportRequestOptions } from "../transport.js";
-import type { RequestOptions } from "../types.js";
 
 /** Input used to create or replace an EPG source. */
 export interface EpgSourceInput {
@@ -54,16 +52,3 @@ export interface EpgRuleInput {
 
 /** Fields accepted when updating an EPG keyword rule. */
 export type EpgRuleUpdate = Partial<EpgRuleInput>;
-
-/** Merges a JSON body with per-request headers and cancellation options. */
-export function epgJsonOptions(
-	value: unknown,
-	options: RequestOptions,
-): TransportRequestOptions {
-	const request = jsonRequest(value);
-	const headers = new Headers(options.headers);
-	new Headers(request.headers).forEach((header, name) => {
-		headers.set(name, header);
-	});
-	return { ...options, ...request, headers };
-}

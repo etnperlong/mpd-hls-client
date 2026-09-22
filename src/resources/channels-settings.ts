@@ -7,11 +7,7 @@ import {
 	channelSchema,
 } from "../schemas/channel.js";
 import { unknownObjectSchema } from "../schemas/common.js";
-import {
-	jsonRequest,
-	type Transport,
-	type TransportRequestOptions,
-} from "../transport.js";
+import { jsonOptions, type Transport } from "../transport.js";
 import type { ForceOptions, RequestOptions } from "../types.js";
 
 export type ChannelPatch = Readonly<Record<string, unknown>>;
@@ -20,19 +16,6 @@ export type JsonObject = z.infer<typeof unknownObjectSchema>;
 export interface ChannelLogOptions extends RequestOptions {
 	limit?: number;
 	sinceMs?: number;
-}
-
-/** Combines operation options with a serialized JSON request body. */
-export function channelJsonRequest(
-	value: unknown,
-	options: RequestOptions = {},
-): TransportRequestOptions {
-	const request = jsonRequest(value);
-	const headers = new Headers(options.headers);
-	new Headers(request.headers).forEach((value, key) => {
-		headers.set(key, value);
-	});
-	return { ...options, ...request, headers };
 }
 
 /** Implements channel log and stream-setting operations. */
@@ -163,7 +146,7 @@ export class ChannelSettingsResource {
 			"POST",
 			withQuery(this.path(streamKey, suffix), { force }),
 			unknownObjectSchema,
-			channelJsonRequest(body, request),
+			jsonOptions(body, request),
 		);
 	}
 
@@ -177,7 +160,7 @@ export class ChannelSettingsResource {
 			method,
 			path,
 			channelSchema,
-			channelJsonRequest(body, options),
+			jsonOptions(body, options),
 		);
 	}
 }

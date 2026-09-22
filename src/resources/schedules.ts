@@ -14,17 +14,8 @@ import {
 	scheduleSchema,
 	type UpdateScheduleInput,
 } from "../schemas/schedule.js";
-import { jsonRequest, type Transport } from "../transport.js";
+import { jsonOptions, type Transport } from "../transport.js";
 import type { RequestOptions } from "../types.js";
-
-function jsonOptions(value: unknown, options: RequestOptions) {
-	const request = jsonRequest(value);
-	const headers = new Headers(options.headers);
-	new Headers(request.headers).forEach((header, name) => {
-		headers.set(name, header);
-	});
-	return { ...options, ...request, headers };
-}
 
 /** Client for schedule management operations. */
 export class SchedulesResource {
