@@ -2,7 +2,7 @@
 
 [English](./README.md) | 简体中文
 
-`mpd-hls-client` 是一个类型安全、仅用于服务端的 TypeScript API Client，用于访问 MPD-HLS 管理 API。当前版本与 MPD-HLS `0.13.x` 对齐，并使用 Zod v4 对 JSON 响应执行运行时校验。
+`mpd-hls-client` 是一个类型安全、仅用于服务端的 TypeScript API Client，用于访问 CharmingStreamer（原 MPD-HLS）管理 API。当前版本与 CharmingStreamer `1.3.x` 对齐，并使用 Zod v4 对 JSON 响应执行运行时校验。
 
 ## 运行时支持
 
@@ -34,7 +34,7 @@ npm install mpd-hls-client
 import { MpdHlsClient } from "mpd-hls-client";
 
 const client = new MpdHlsClient({
-	baseUrl: "https://mpd-hls.example.com",
+	baseUrl: "https://stream.example.com",
 	auth: {
 		username: process.env.MPD_HLS_USERNAME!,
 		password: process.env.MPD_HLS_PASSWORD!,
@@ -49,17 +49,35 @@ for (const channel of channels.items) {
 }
 ```
 
-管理 API 使用 HTTP Basic Auth。请勿在浏览器应用中嵌入管理账号和密码。
+管理 API 使用 Web UI 会话鉴权（详见下文「鉴权与会话」）。请勿在浏览器应用中嵌入管理账号和密码。
+
+## 鉴权与会话
+
+CharmingStreamer 1.3 已移除 HTTP Basic Auth，`/api/*` 仅接受 Web UI 会话。Client 会自动完成整个流程：首次请求时调用 `POST /api/auth/login`，保存 `mpd_hls_session` 与 `mpd_hls_csrf` Cookie，对所有非 `GET`/`HEAD` 请求自动附带 `X-CSRF-Token`，会话过期时自动重新登录并重放一次请求。并发请求共享同一次登录。
+
+也可以显式控制会话，并在进程之间持久化：
+
+```ts
+await client.auth.login();
+const snapshot = client.auth.snapshot(); // { cookies: { … } }，属于敏感数据
+await client.auth.logout();
+
+const resumed = new MpdHlsClient({
+	baseUrl: "https://stream.example.com",
+	auth: { username: "admin", password: "secret" },
+	session: snapshot,
+});
+```
 
 ## 数据与字段约定
 
-MPD-HLS 的请求和响应对象保留服务端原始 `snake_case` 字段，不会自动转换为 `camelCase`。Client 还会保留 Zod Schema 未显式声明的扩展字段，以兼容后续 MPD-HLS 版本增加的新字段。
+CharmingStreamer 的请求和响应对象保留服务端原始 `snake_case` 字段，不会自动转换为 `camelCase`。Client 还会保留 Zod Schema 未显式声明的扩展字段，以兼容后续版本增加的新字段。
 
 管理 API 返回的数据可能包含：
 
 - ClearKey / CENC 的 `license_kid` 和 `license_key`
 - 上游播放地址和代理地址
-- 用户密码摘要
+- 用户订阅地址与播放列表 Token
 - 播放 Token 和鉴权查询参数
 - Telegram 配置
 
@@ -70,6 +88,7 @@ MPD-HLS 的请求和响应对象保留服务端原始 `snake_case` 字段，不�
 主 Client 暴露以下资源：
 
 ```ts
+client.auth;
 client.system;
 client.channels;
 client.groups;
@@ -80,7 +99,13 @@ client.recordings;
 client.subtitleProfiles;
 client.fonts;
 client.filenameTemplates;
+client.scripts;
 client.telegram;
+client.traffic;
+client.viewer;
+client.branding;
+client.xtream;
+client.stalker;
 client.utilities;
 ```
 
@@ -114,10 +139,11 @@ await client.channels.restart("stream-key");
 
 - 创建、更新、删除和分页查询
 - Probe 和日志查询、清理
-- On-demand、Track、Subtitle、Raw passthrough 等配置
+- On-demand（可选同时停流）、Track、Subtitle、Raw passthrough 等配置
 - Start、Stop、Restart
 - 批量启动、停止、探测、删除和编辑
 - 排序、绝对移动和相对移动
+- 单频道流量统计
 - o11 导入
 - M3U 导出
 
@@ -132,7 +158,7 @@ const exported = await client.groups.export("group-id");
 
 ### Users 与播放 Token
 
-支持用户 CRUD、密码更新，以及播放 Token 的创建、续期、查询和撤销。
+支持用户 CRUD、密码更新、可见频道范围配置，以及播放 Token 的创建、续期、查询和撤销。
 
 ```ts
 const users = await client.users.list();
@@ -194,7 +220,30 @@ const stream = response.body;
 const text = await client.utilities.fetchUrl("https://example.com/data.json");
 ```
 
-`fetchUrl` 会要求 MPD-HLS 服务端代为请求目标 URL。该接口具有 SSRF 风险，应用应限制允许传入的目标地址。
+`fetchUrl` 会要求 CharmingStreamer 服务端代为请求目标 URL。该接口具有 SSRF 风险，应用应限制允许传入的目标地址。
+
+### Providers（Xtream 与 Stalker）
+
+支持 Xtream Codes 账号与 Stalker Portal 账号的 CRUD、目录同步、分类与频道查询、频道导入、播放链接获取，以及上游会话查看和强制断开。
+
+```ts
+const accounts = await client.xtream.listAccounts();
+const channels = await client.xtream.listChannels(accountId, { search: "CCTV", perPage: 50 });
+const link = await client.xtream.channelLink(accountId, channelId, "hls");
+
+for await (const event of client.xtream.testChannels(accountId, [channelId])) {
+	console.log(event.id, event.ok, event.latency_ms);
+}
+```
+
+频道测试接口返回 NDJSON 流，Client 以异步迭代器逐条校验并返回事件；流式接口不受 30 秒超时限制。
+
+### Scripts、Traffic、Viewer 与 Branding
+
+- `client.scripts`：服务端脚本目录浏览、读取、保存、重命名、上传和删除
+- `client.traffic`：全局流量总览与单频道流量明细
+- `client.viewer`：面向观看者的频道与分组列表，以及播放链接签发
+- `client.branding`：站点名称与站点图标的读取、更新和重置
 
 ## 超时与请求取消
 
@@ -202,7 +251,7 @@ const text = await client.utilities.fetchUrl("https://example.com/data.json");
 
 ```ts
 const client = new MpdHlsClient({
-	baseUrl: "https://mpd-hls.example.com",
+	baseUrl: "https://stream.example.com",
 	auth: { username: "admin", password: "secret" },
 	timeoutMs: 15_000,
 });
@@ -237,7 +286,7 @@ try {
 	await client.channels.list();
 } catch (error) {
 	if (error instanceof MpdHlsAuthenticationError) {
-		// Handle invalid management credentials.
+		// 登录凭据无效，或会话被服务端撤销。
 	} else if (error instanceof MpdHlsHttpError) {
 		console.error(error.status, error.responseBody);
 	}
@@ -266,7 +315,7 @@ import {
 
 ```ts
 const client = new MpdHlsClient({
-	baseUrl: "https://mpd-hls.example.com",
+	baseUrl: "https://stream.example.com",
 	auth: { username: "admin", password: "secret" },
 	fetch: customFetch,
 });
@@ -306,7 +355,7 @@ bun run test:runtimes
 只有在设置以下环境变量时，线上契约测试才会执行：
 
 ```bash
-MPD_HLS_BASE_URL=https://mpd-hls.example.com \
+MPD_HLS_BASE_URL=https://stream.example.com \
 MPD_HLS_USERNAME=admin \
 MPD_HLS_PASSWORD=secret \
 bun test src/__tests__/contract.test.ts
