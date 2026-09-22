@@ -25,8 +25,8 @@ describe("SystemResource endpoints", () => {
 		]);
 		for (const { init } of requests) {
 			expect(init?.method).toBe("GET");
-			expect(new Headers(init?.headers).get("Authorization")).toBe(
-				"Basic YXBpLXVzZXI6YXBpLXBhc3N3b3Jk",
+			expect(new Headers(init?.headers).get("Cookie")).toBe(
+				"mpd_hls_session=session-value; mpd_hls_csrf=csrf-value",
 			);
 		}
 		expect(metrics.active_sessions[0]).toEqual({
@@ -34,7 +34,7 @@ describe("SystemResource endpoints", () => {
 			future_state: { value: 1 },
 		});
 		expect(metrics.future_metric).toBe("preserved");
-		expect(identity.auth_query).toBe("u=operator&p=secret-token");
+		expect(identity.capabilities).toEqual(["admin", "channels.manage"]);
 		expect(identity.future_identity_field).toBe(true);
 		expect(defaults.future_tuning_field).toBe("preserved");
 	});

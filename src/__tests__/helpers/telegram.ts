@@ -1,5 +1,6 @@
 import type { TelegramConfigUpdate } from "../../schemas/telegram";
 import { Transport } from "../../transport";
+import { TEST_SESSION } from "./session";
 
 export function createTelegramTransport(
 	fetch: typeof globalThis.fetch,
@@ -8,6 +9,7 @@ export function createTelegramTransport(
 		baseUrl: "https://example.test/root",
 		auth: { username: "admin", password: "secret" },
 		fetch,
+		session: TEST_SESSION,
 	});
 }
 

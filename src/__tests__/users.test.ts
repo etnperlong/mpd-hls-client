@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { UsersResource } from "../resources/users";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 interface RecordedRequest {
 	method: string;
@@ -12,9 +13,12 @@ function user(id: string) {
 	return {
 		id,
 		username: "viewer",
-		password_sha256: "preserved-hash",
 		role: "user",
+		web_ui_access: false,
+		channel_filter_enabled: true,
 		allowed_group_ids: ["g1"],
+		allowed_channel_ids: ["c1"],
+		playlist_url: "https://example.test/sub/token/playlist.m3u",
 		created_at_ms: 1,
 		updated_at_ms: 2,
 		extension: "kept",
@@ -59,6 +63,7 @@ function createHarness() {
 		baseUrl: "https://example.test/root",
 		auth: { username: "admin", password: "secret" },
 		fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new UsersResource(transport), requests };
 }
@@ -67,7 +72,7 @@ describe("UsersResource", () => {
 	it("lists, creates, updates, changes passwords, and deletes users", async () => {
 		const { resource, requests } = createHarness();
 		const listed = await resource.list();
-		expect(listed.items[0]?.password_sha256).toBe("preserved-hash");
+		expect(listed.items[0]?.playlist_url).toContain("/sub/");
 		expect(listed.items[0]?.extension).toBe("kept");
 		await resource.create({
 			username: "viewer",

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { GroupsResource } from "../resources/groups";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 interface RecordedRequest {
 	method: string;
@@ -49,6 +50,7 @@ function createHarness() {
 		baseUrl: "https://example.test/root",
 		auth: { username: "admin", password: "secret" },
 		fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new GroupsResource(transport), requests };
 }

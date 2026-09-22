@@ -1,5 +1,6 @@
 import { EpgResource } from "../../resources/epg";
 import { Transport } from "../../transport";
+import { TEST_SESSION } from "./session";
 
 export interface CapturedCall {
 	url: string;
@@ -27,6 +28,7 @@ export function createEpgResource(responses: unknown[]) {
 		baseUrl: "https://example.test/root",
 		auth: { username: "admin", password: "secret" },
 		fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new EpgResource(transport), calls };
 }

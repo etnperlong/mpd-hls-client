@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { ChannelsResource } from "../resources/channels";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 const channel = {
 	channel_id: "channel/1",
@@ -44,6 +45,7 @@ function setup() {
 		baseUrl: "https://api.example.test/",
 		auth: { username: "user", password: "pass" },
 		fetch,
+		session: TEST_SESSION,
 	});
 	return { channels: new ChannelsResource(transport), requests };
 }

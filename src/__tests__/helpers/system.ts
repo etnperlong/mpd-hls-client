@@ -1,5 +1,6 @@
 import { SystemResource } from "../../resources/system";
 import { Transport } from "../../transport";
+import { TEST_SESSION } from "./session";
 
 export const metricsResponse = {
 	ok: true,
@@ -62,9 +63,10 @@ export const metricsResponse = {
 };
 
 export const whoAmIResponse = {
+	id: "user-7",
 	username: "operator",
 	role: "admin",
-	auth_query: "u=operator&p=secret-token",
+	capabilities: ["admin", "channels.manage"],
 	future_identity_field: true,
 };
 
@@ -107,6 +109,7 @@ export function createSystemResource(responses: unknown[]) {
 		baseUrl: "https://example.test/",
 		auth: { username: "api-user", password: "api-password" },
 		fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new SystemResource(transport), requests };
 }

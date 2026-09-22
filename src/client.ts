@@ -1,3 +1,4 @@
+import { AuthResource } from "./resources/auth.js";
 import { ChannelsResource } from "./resources/channels.js";
 import { EpgResource } from "./resources/epg.js";
 import { FilenameTemplatesResource } from "./resources/filename-templates.js";
@@ -15,6 +16,7 @@ import type { MpdHlsClientOptions } from "./types.js";
 
 /** Complete server-side client for the MPD-HLS management API. */
 export class MpdHlsClient {
+	readonly auth: AuthResource;
 	readonly system: SystemResource;
 	readonly channels: ChannelsResource;
 	readonly groups: GroupsResource;
@@ -30,6 +32,7 @@ export class MpdHlsClient {
 
 	constructor(options: MpdHlsClientOptions) {
 		const transport = new Transport(options);
+		this.auth = new AuthResource(transport, options.auth);
 		this.system = new SystemResource(transport);
 		this.channels = new ChannelsResource(transport);
 		this.groups = new GroupsResource(transport);

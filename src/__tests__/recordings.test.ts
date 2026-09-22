@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { MpdHlsResponseValidationError } from "../errors";
 import { RecordingsResource } from "../resources/recordings";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 const recording = {
 	id: "recording-1",
@@ -45,6 +46,7 @@ function createResource(responses: Array<unknown | Response>) {
 		baseUrl: "https://example.test/",
 		auth: { username: "api-user", password: "api-password" },
 		fetch: fetch as typeof globalThis.fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new RecordingsResource(transport), requests };
 }

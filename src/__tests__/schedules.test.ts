@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { MpdHlsResponseValidationError } from "../errors";
 import { SchedulesResource } from "../resources/schedules";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 const schedule = {
 	id: "schedule-1",
@@ -43,6 +44,7 @@ function createResource(responses: unknown[]) {
 		baseUrl: "https://example.test/",
 		auth: { username: "api-user", password: "api-password" },
 		fetch: fetch as typeof globalThis.fetch,
+		session: TEST_SESSION,
 	});
 	return { resource: new SchedulesResource(transport), requests };
 }

@@ -76,11 +76,12 @@ export const metricsSchema = z.looseObject({
 	recording: recordingMetricsSchema,
 });
 
-/** Schema for the authenticated user response. */
+/** Schema for the authenticated session owner returned by the API. */
 export const whoAmISchema = z.looseObject({
+	id: z.string(),
 	username: z.string(),
 	role: z.string(),
-	auth_query: z.string(),
+	capabilities: z.array(z.string()),
 });
 
 /** Schema for stream tuning defaults. */

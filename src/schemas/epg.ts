@@ -85,10 +85,13 @@ export const epgBindingCandidateSchema = z.looseObject({
 
 /** Schema for a stream that can be displayed in the EPG guide. */
 export const epgDisplayableChannelSchema = z.looseObject({
+	channel_id: z.string(),
 	stream_key: z.string(),
 	name: z.string(),
-	epg_alias_of: z.string().nullable(),
+	logo: z.string().nullable(),
+	delivery_mode: z.string(),
 	group_id: z.string().nullable(),
+	group_name: z.string().nullable(),
 });
 
 /** Schema for a programme returned by the EPG guide query. */

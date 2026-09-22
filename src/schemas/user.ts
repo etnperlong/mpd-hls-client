@@ -5,9 +5,12 @@ import { itemListSchema } from "./common.js";
 export const UserSchema = z.looseObject({
 	id: z.string(),
 	username: z.string(),
-	password_sha256: z.string(),
 	role: z.string(),
+	web_ui_access: z.boolean(),
+	channel_filter_enabled: z.boolean(),
 	allowed_group_ids: z.array(z.string()),
+	allowed_channel_ids: z.array(z.string()),
+	playlist_url: z.string(),
 	created_at_ms: z.number().int(),
 	updated_at_ms: z.number().int(),
 });

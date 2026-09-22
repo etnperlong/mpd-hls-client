@@ -29,10 +29,13 @@ describe("EpgResource bindings", () => {
 			icon: null,
 		};
 		const displayable = {
+			channel_id: "channel-1",
 			stream_key: "stream/one",
 			name: "Local News",
-			epg_alias_of: null,
+			logo: null,
+			delivery_mode: "package",
 			group_id: null,
+			group_name: null,
 		};
 		const { resource, calls } = createEpgResource([
 			[binding],

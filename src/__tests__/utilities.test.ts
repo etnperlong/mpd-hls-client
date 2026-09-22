@@ -1,12 +1,14 @@
 import { describe, expect, it } from "bun:test";
 import { UtilitiesResource } from "../resources/utilities";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 function createTransport(fetch: typeof globalThis.fetch): Transport {
 	return new Transport({
 		baseUrl: "https://example.test/root",
 		auth: { username: "admin", password: "secret" },
 		fetch,
+		session: TEST_SESSION,
 	});
 }
 

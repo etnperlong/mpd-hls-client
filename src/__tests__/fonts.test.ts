@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { FontsResource } from "../resources/fonts";
 import { Transport } from "../transport";
+import { TEST_SESSION } from "./helpers/session";
 
 function createResource(
 	handler: (url: URL, init: RequestInit) => Response | Promise<Response>,
@@ -15,6 +16,7 @@ function createResource(
 			baseUrl: "https://example.test",
 			auth: { username: "user", password: "pass" },
 			fetch,
+			session: TEST_SESSION,
 		}),
 	);
 }

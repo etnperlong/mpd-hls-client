@@ -1,6 +1,7 @@
 export * from "./auth.js";
 export * from "./client.js";
 export * from "./errors.js";
+export * from "./resources/auth.js";
 export * from "./resources/channels.js";
 export * from "./resources/epg.js";
 export * from "./resources/filename-templates.js";

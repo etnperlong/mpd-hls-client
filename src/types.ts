@@ -1,15 +1,20 @@
-import type { BasicAuth } from "./auth.js";
+import type { SessionCredentials, SessionSnapshot } from "./auth.js";
 
 /** HTTP implementation accepted by the client. */
 export type Fetch = typeof globalThis.fetch;
 
-/** Query values supported by the MPD-HLS API. */
+/** HTTP methods used by the management API. */
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** Query values supported by the CharmingStreamer API. */
 export type QueryValue = string | number | boolean | null | undefined;
 
 /** Client construction options. */
 export interface MpdHlsClientOptions {
 	baseUrl: string | URL;
-	auth: BasicAuth;
+	auth: SessionCredentials;
+	/** Previously persisted session cookies reused instead of logging in. */
+	session?: SessionSnapshot;
 	fetch?: Fetch;
 	headers?: HeadersInit;
 	timeoutMs?: number;
