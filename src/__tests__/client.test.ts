@@ -11,6 +11,7 @@ describe("MpdHlsClient", () => {
 		});
 		expect(Object.keys(client).sort()).toEqual([
 			"auth",
+			"branding",
 			"channels",
 			"epg",
 			"filenameTemplates",
@@ -18,11 +19,16 @@ describe("MpdHlsClient", () => {
 			"groups",
 			"recordings",
 			"schedules",
+			"scripts",
+			"stalker",
 			"subtitleProfiles",
 			"system",
 			"telegram",
+			"traffic",
 			"users",
 			"utilities",
+			"viewer",
+			"xtream",
 		]);
 	});
 });

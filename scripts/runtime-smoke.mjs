@@ -7,6 +7,7 @@ const client = new MpdHlsClient({
 });
 
 const resources = [
+	"auth",
 	"system",
 	"channels",
 	"groups",
@@ -17,7 +18,13 @@ const resources = [
 	"subtitleProfiles",
 	"fonts",
 	"filenameTemplates",
+	"scripts",
 	"telegram",
+	"traffic",
+	"viewer",
+	"branding",
+	"xtream",
+	"stalker",
 	"utilities",
 ];
 
@@ -27,7 +34,16 @@ for (const resource of resources) {
 	}
 }
 
-for (const schema of ["channelSchema", "metricsSchema", "epgRuleSchema"]) {
+for (const schema of [
+	"channelSchema",
+	"metricsSchema",
+	"epgRuleSchema",
+	"xtreamAccountSchema",
+	"trafficOverviewSchema",
+	"scriptListingSchema",
+	"brandingSchema",
+	"viewerChannelSchema",
+]) {
 	if (!(schema in schemas)) {
 		throw new Error(`Missing schema export: ${schema}`);
 	}
