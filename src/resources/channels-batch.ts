@@ -8,6 +8,8 @@ import {
 	ChannelSettingsResource,
 	type JsonObject,
 } from "./channels-settings.js";
+/** Position accepted by channel ordering operations. */
+export type ChannelOrderPosition = "before" | "after";
 
 /** Implements channel batch and ordering operations. */
 export class ChannelBatchResource extends ChannelSettingsResource {
@@ -115,7 +117,7 @@ export class ChannelBatchResource extends ChannelSettingsResource {
 	moveRelative(
 		channelId: string,
 		anchorId: string,
-		position: string,
+		position: ChannelOrderPosition,
 		options: RequestOptions = {},
 	): Promise<JsonObject> {
 		return this.byIdPost(
@@ -138,7 +140,7 @@ export class ChannelBatchResource extends ChannelSettingsResource {
 	reorderPartial(
 		ids: readonly string[],
 		anchorId: string,
-		position: string,
+		position: ChannelOrderPosition,
 		options: RequestOptions = {},
 	): Promise<JsonObject> {
 		return this.batchPost(

@@ -1,6 +1,8 @@
 import {
 	type Metrics,
 	metricsSchema,
+	type PlaylistLink,
+	playlistLinkSchema,
 	type TuningDefaults,
 	tuningDefaultsSchema,
 	type WhoAmI,
@@ -8,7 +10,6 @@ import {
 } from "../schemas/system.js";
 import type { Transport } from "../transport.js";
 import type { RequestOptions } from "../types.js";
-
 /** Client for system status, identity, and tuning-default endpoints. */
 export class SystemResource {
 	readonly #transport: Transport;
@@ -25,6 +26,15 @@ export class SystemResource {
 	/** Returns details for the currently authenticated user. */
 	whoAmI(options: RequestOptions = {}): Promise<WhoAmI> {
 		return this.#transport.json("GET", "/api/me", whoAmISchema, options);
+	}
+	/** Returns a playlist link for the currently authenticated user. */
+	playlistLink(options: RequestOptions = {}): Promise<PlaylistLink> {
+		return this.#transport.json(
+			"GET",
+			"/api/me/playlist-link",
+			playlistLinkSchema,
+			options,
+		);
 	}
 
 	/** Returns the server's default stream tuning values. */

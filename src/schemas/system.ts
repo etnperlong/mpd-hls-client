@@ -106,6 +106,13 @@ export const tuningDefaultsSchema = z.looseObject({
 	bootstrap_skip_text_media: z.boolean(),
 	bootstrap_media_first_count: z.number().int(),
 });
+/** Schema for the authenticated user's playlist link. */
+export const playlistLinkSchema = z.looseObject({
+	url: z.string(),
+});
+
+/** Playlist link returned by the management API. */
+export type PlaylistLink = z.infer<typeof playlistLinkSchema>;
 
 /** System metrics returned by the management API. */
 export type Metrics = z.infer<typeof metricsSchema>;

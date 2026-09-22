@@ -65,6 +65,7 @@ describe("ChannelsResource settings", () => {
 	it("uses the documented setting body keys and force query", async () => {
 		const { channels, requests } = setup();
 		await channels.setOnDemand("key", true);
+		await channels.setOnDemand("key", false, { stopStream: true });
 		await channels.setTrackConfig(
 			"key",
 			{ audio: [{ index: 1 }] },
@@ -78,7 +79,8 @@ describe("ChannelsResource settings", () => {
 		expect(
 			await Promise.all(requests.map((request) => request.json())),
 		).toEqual([
-			{ on_demand: true },
+			{ on_demand: true, stop_stream: false },
+			{ on_demand: false, stop_stream: true },
 			{ track_config: { audio: [{ index: 1 }] } },
 			{ subtitle_formats: ["vtt", "srt"] },
 			{ embed_audio_in_video: true },
@@ -87,7 +89,7 @@ describe("ChannelsResource settings", () => {
 		]);
 		expect(
 			requests
-				.slice(1, 5)
+				.slice(2, 6)
 				.every((request) => new URL(request.url).search === "?force=true"),
 		).toBe(true);
 	});

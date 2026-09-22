@@ -10,7 +10,20 @@ interface RecordedRequest {
 }
 
 function group(id: string, name = "News") {
-	return { id, name, channel_count: 2 };
+	return {
+		id,
+		name,
+		channel_count: 2,
+		gateway: {
+			request_headers: [
+				{
+					downstream_name: "X-Client",
+					upstream_name: "X-Upstream",
+					inherit_to_children: true,
+				},
+			],
+		},
+	};
 }
 
 function createHarness() {
@@ -60,6 +73,9 @@ describe("GroupsResource", () => {
 		const { resource, requests } = createHarness();
 		const listed = await resource.list();
 		expect(listed.items[0]?.extension).toBe(true);
+		expect(listed.items[0]?.gateway.request_headers?.[0]?.downstream_name).toBe(
+			"X-Client",
+		);
 		await resource.create("Sports");
 		await resource.update(
 			"g/1",

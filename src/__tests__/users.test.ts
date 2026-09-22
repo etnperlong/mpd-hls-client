@@ -28,10 +28,13 @@ function user(id: string) {
 function token(value: string) {
 	return {
 		token: value,
+		user_id: "u1",
+		purpose: "playlist",
 		label: "TV",
 		created_at_ms: 3,
 		last_seen_at_ms: null,
 		expires_at_ms: 4,
+		subscription_url: "https://example.test/sub/token/playlist.m3u",
 		extension: true,
 	};
 }
@@ -51,6 +54,19 @@ function createHarness() {
 			if (path === "/api/users" && init?.method === "GET") {
 				return Response.json({ items: [user("u1")] });
 			}
+			if (path === "/api/users/channel-options") {
+				return Response.json({
+					items: [
+						{
+							channel_id: "c1",
+							group_id: "g1",
+							group_name: "News",
+							name: "Channel",
+							extension: "kept",
+						},
+					],
+				});
+			}
 			if (path.endsWith("/tokens") && init?.method === "GET") {
 				return Response.json({ items: [token("listed-token")] });
 			}
@@ -69,29 +85,32 @@ function createHarness() {
 }
 
 describe("UsersResource", () => {
-	it("lists, creates, updates, changes passwords, and deletes users", async () => {
+	it("uses v1.3 user bodies and lists channel options", async () => {
 		const { resource, requests } = createHarness();
 		const listed = await resource.list();
 		expect(listed.items[0]?.playlist_url).toContain("/sub/");
 		expect(listed.items[0]?.extension).toBe("kept");
+		const options = await resource.listChannelOptions();
+		expect(options.items[0]?.extension).toBe("kept");
 		await resource.create({
 			username: "viewer",
 			password: "plain-password",
 			role: "user",
 			allowed_group_ids: ["g1"],
+			channel_filter_enabled: true,
+			allowed_channel_ids: ["c1"],
+			web_ui_access: false,
 		});
-		await resource.update("u/1", {
-			role: "admin",
-			allowed_group_ids: [],
-		});
+		await resource.update("u/1", { role: "admin", allowed_group_ids: [] });
 		await resource.updatePassword("u/1", "new-password");
 		await resource.delete("u/1");
 		expect(requests).toEqual([
 			{ method: "GET", path: "/api/users", body: undefined },
+			{ method: "GET", path: "/api/users/channel-options", body: undefined },
 			{
 				method: "POST",
 				path: "/api/users",
-				body: '{"username":"viewer","password":"plain-password","role":"user","allowed_group_ids":["g1"]}',
+				body: '{"username":"viewer","password":"plain-password","role":"user","allowed_group_ids":["g1"],"channel_filter_enabled":true,"allowed_channel_ids":["c1"],"web_ui_access":false}',
 			},
 			{
 				method: "PUT",
@@ -107,36 +126,22 @@ describe("UsersResource", () => {
 		]);
 	});
 
-	it("lists, creates, revokes, and renews user tokens", async () => {
+	it("lists, creates, revokes, and renews tokens", async () => {
 		const { resource, requests } = createHarness();
 		const listed = await resource.listTokens("u/1");
-		expect(listed.items[0]?.token).toBe("listed-token");
-		expect(listed.items[0]?.extension).toBe(true);
+		expect(listed.items[0]?.user_id).toBe("u1");
+		expect(listed.items[0]?.subscription_url).toContain("/sub/");
 		const created = await resource.createToken("u/1", {
 			label: "TV",
-			ttl_secs: 3600,
+			ttlSecs: 3600,
 		});
-		expect(created.token).toBe("secret-token");
+		expect(created.purpose).toBe("playlist");
+		await resource.createToken("u/1", {});
 		await resource.revokeToken("u/1", "token/value");
-		const renewed = await resource.renewToken("u/1", "token/value", 7200);
-		expect(renewed.token).toBe("secret-token");
-		expect(requests).toEqual([
-			{ method: "GET", path: "/api/users/u%2F1/tokens", body: undefined },
-			{
-				method: "POST",
-				path: "/api/users/u%2F1/tokens",
-				body: '{"label":"TV","ttl_secs":3600}',
-			},
-			{
-				method: "DELETE",
-				path: "/api/users/u%2F1/tokens/token%2Fvalue",
-				body: undefined,
-			},
-			{
-				method: "PATCH",
-				path: "/api/users/u%2F1/tokens/token%2Fvalue",
-				body: '{"ttl_secs":7200}',
-			},
-		]);
+		await resource.renewToken("u/1", "token/value", 7200);
+		expect(requests[1]?.body).toBe('{"label":"TV","ttl_secs":3600}');
+		expect(requests[2]?.body).toBe("{}");
+		expect(requests[4]?.body).toBe('{"ttl_secs":7200}');
+		expect(requests[3]?.path).toBe("/api/users/u%2F1/tokens/token%2Fvalue");
 	});
 });

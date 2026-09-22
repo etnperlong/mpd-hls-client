@@ -9,6 +9,14 @@ const channel = {
 	name: "Example",
 	source_url: "https://example.test/live.mpd",
 	license_key: "secret",
+	delivery_mode: "package",
+	redirect_mode: "direct",
+	track_config: {
+		video: [{}],
+		audio: [{ adaptation_set_id: "a1" }],
+		text: [],
+	},
+	short_source_aggregation: true,
 	future_field: { enabled: true },
 };
 
@@ -63,6 +71,12 @@ describe("ChannelsResource core operations", () => {
 
 		expect(result.items[0]?.license_key).toBe("secret");
 		expect(result.items[0]?.future_field).toEqual({ enabled: true });
+		expect(result.items[0]?.delivery_mode).toBe("package");
+		expect(result.items[0]?.redirect_mode).toBe("direct");
+		expect(result.items[0]?.track_config?.audio[0]?.adaptation_set_id).toBe(
+			"a1",
+		);
+		expect(result.items[0]?.short_source_aggregation).toBe(true);
 		expect(new URL(requests[0]?.url ?? "").searchParams).toEqual(
 			new URLSearchParams({
 				page: "2",

@@ -1,10 +1,12 @@
 import type {
 	User,
+	UserChannelOptionList,
 	UserList,
 	UserToken,
 	UserTokenList,
 } from "../schemas/user.js";
 import {
+	UserChannelOptionListSchema,
 	UserListSchema,
 	UserSchema,
 	UserTokenListSchema,
@@ -13,14 +15,15 @@ import {
 import type { Transport } from "../transport.js";
 import { jsonOptions } from "../transport.js";
 import type { RequestOptions } from "../types.js";
-
 /** Wire payload accepted by the user creation endpoint. */
 export interface CreateUserInput {
 	username: string;
 	password: string;
 	role: string;
 	allowed_group_ids: readonly string[];
-	[key: string]: unknown;
+	channel_filter_enabled: boolean;
+	allowed_channel_ids: readonly string[];
+	web_ui_access: boolean;
 }
 
 /** Wire payload accepted by the user update endpoint. */
@@ -28,14 +31,16 @@ export interface UpdateUserInput {
 	username?: string;
 	role?: string;
 	allowed_group_ids?: readonly string[];
-	[key: string]: unknown;
+	channel_filter_enabled?: boolean;
+	allowed_channel_ids?: readonly string[];
+	web_ui_access?: boolean;
 }
 
-/** Wire payload accepted by the user token creation endpoint. */
+/** Client options accepted by the user token creation endpoint. */
 export interface CreateUserTokenInput {
 	label?: string;
 	ttl_secs?: number;
-	[key: string]: unknown;
+	ttlSecs?: number;
 }
 
 /** Client for user and user-token management operations. */
@@ -57,6 +62,18 @@ export class UsersResource {
 			"/api/users",
 			UserSchema,
 			jsonOptions(payload, options),
+		);
+	}
+
+	/** Lists channel choices used when configuring user access. */
+	listChannelOptions(
+		options: RequestOptions = {},
+	): Promise<UserChannelOptionList> {
+		return this.transport.json(
+			"GET",
+			"/api/users/channel-options",
+			UserChannelOptionListSchema,
+			options,
 		);
 	}
 
@@ -112,11 +129,16 @@ export class UsersResource {
 		payload: CreateUserTokenInput,
 		options: RequestOptions = {},
 	): Promise<UserToken> {
+		const ttlSecs = payload.ttlSecs ?? payload.ttl_secs;
+		const body = {
+			...(payload.label ? { label: payload.label } : {}),
+			...(ttlSecs === undefined ? {} : { ttl_secs: ttlSecs }),
+		};
 		return this.transport.json(
 			"POST",
 			`${this.userPath(userId)}/tokens`,
 			UserTokenSchema,
-			jsonOptions(payload, options),
+			jsonOptions(body, options),
 		);
 	}
 

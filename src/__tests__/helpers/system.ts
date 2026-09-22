@@ -69,6 +69,10 @@ export const whoAmIResponse = {
 	capabilities: ["admin", "channels.manage"],
 	future_identity_field: true,
 };
+export const playlistLinkResponse = {
+	url: "https://example.test/sub/token/playlist.m3u",
+	future_playlist_field: true,
+};
 
 export const tuningDefaultsResponse = {
 	startup_timeout_ms: 1_001,

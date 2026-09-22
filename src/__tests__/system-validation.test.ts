@@ -15,6 +15,10 @@ describe("SystemResource validation", () => {
 				body: { role: "admin" },
 			},
 			{
+				invoke: (resource: SystemResource) => resource.playlistLink(),
+				body: { url: 123 },
+			},
+			{
 				invoke: (resource: SystemResource) => resource.getTuningDefaults(),
 				body: { startup_timeout_ms: "8000" },
 			},

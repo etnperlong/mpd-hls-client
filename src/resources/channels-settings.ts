@@ -18,6 +18,11 @@ export interface ChannelLogOptions extends RequestOptions {
 	sinceMs?: number;
 }
 
+/** Options for enabling or disabling channel on-demand startup. */
+export interface SetOnDemandOptions extends RequestOptions {
+	stopStream?: boolean;
+}
+
 /** Implements channel log and stream-setting operations. */
 export class ChannelSettingsResource {
 	constructor(protected readonly transport: Transport) {}
@@ -50,13 +55,14 @@ export class ChannelSettingsResource {
 	setOnDemand(
 		streamKey: string,
 		onDemand: boolean,
-		options: RequestOptions = {},
+		options: SetOnDemandOptions = {},
 	): Promise<JsonObject> {
+		const { stopStream, ...request } = options;
 		return this.postSetting(
 			streamKey,
 			"on-demand",
-			{ on_demand: onDemand },
-			options,
+			{ on_demand: onDemand, stop_stream: stopStream ?? false },
+			request,
 		);
 	}
 

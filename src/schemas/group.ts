@@ -1,10 +1,30 @@
 import { z } from "zod";
 import { itemListSchema, unknownObjectSchema } from "./common.js";
 
+/** Schema for a gateway name mapping. */
+const gatewayMappingSchema = z.looseObject({
+	downstream_name: z.string(),
+	upstream_name: z.string(),
+	inherit_to_children: z.boolean(),
+});
+
+/** Schema for group-level gateway settings. */
+const gatewaySchema = z.looseObject({
+	query_params: z.array(gatewayMappingSchema).optional(),
+	request_headers: z.array(gatewayMappingSchema).optional(),
+	cache_enabled: z.boolean().optional(),
+	cache_max_bytes: z.number().int().optional(),
+	cache_ttl_secs: z.number().int().optional(),
+	manifest_cache_ms: z.number().int().optional(),
+	segment_concurrency: z.number().int().optional(),
+	clearkey_response_format: z.string().optional(),
+});
+
 /** Schema for a group returned by the management API. */
 export const GroupSchema = z.looseObject({
 	id: z.string(),
 	name: z.string(),
+	gateway: gatewaySchema,
 	upstream_proxy_url: z.string().nullable().optional(),
 	user_agent: z.string().nullable().optional(),
 	upstream_headers: z.unknown().optional(),

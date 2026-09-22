@@ -1,6 +1,26 @@
 import { z } from "zod";
 import { itemListSchema, paginatedSchema } from "./common.js";
 
+/** Schema for a selectable MPEG-DASH track. */
+const trackSelectorSchema = z.looseObject({
+	representation_id: z.string().optional(),
+	adaptation_set_id: z.string().optional(),
+	index: z.number().int().optional(),
+});
+
+/** Schema for per-media-type track selections. */
+const trackConfigSchema = z.looseObject({
+	video: z.array(trackSelectorSchema),
+	audio: z.array(trackSelectorSchema),
+	text: z.array(trackSelectorSchema),
+});
+
+/** Delivery modes recognized by CharmingStreamer. */
+export type ChannelDeliveryMode = "package" | "hls_proxy" | "redirect";
+
+/** Redirect modes recognized by CharmingStreamer. */
+export type ChannelRedirectMode = "direct" | "resolve_final";
+
 /** Schema for a channel returned by the management API. */
 export const channelSchema = z.looseObject({
 	channel_id: z.string(),
@@ -22,6 +42,10 @@ export const channelSchema = z.looseObject({
 	status: z.string().optional(),
 	playlist_path: z.string().optional(),
 	playlist_url: z.string().optional(),
+	delivery_mode: z.string(),
+	redirect_mode: z.string(),
+	track_config: trackConfigSchema.optional(),
+	short_source_aggregation: z.boolean().optional(),
 });
 
 /** Schema for a channel list response. */
